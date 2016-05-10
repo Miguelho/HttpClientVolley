@@ -69,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
         //Instanciación clase AsyncTask
         retrieveFeedTask = new RetrieveFeedTask();
 
-        Intent loginIntent = new Intent(this, LoginActivity.class);
-        startActivity(loginIntent);
+        /*Intent loginIntent = new Intent(this, LoginActivity.class);
+        startActivity(loginIntent);*/
 
 
     }

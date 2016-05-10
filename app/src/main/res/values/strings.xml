@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">APICall</string>
-    <string name="API_URL">http://192.168.0.119:3000/login</string>
+    <string name="API_URL">http://192.168.0.116:3000/login</string>
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings related to login -->

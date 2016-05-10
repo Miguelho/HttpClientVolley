@@ -28,7 +28,16 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +49,7 @@ import static android.Manifest.permission.READ_CONTACTS;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
-
+    String token="";
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -92,7 +101,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onClick(View view) {
                 attemptLogin();
-                textView.setText(mLoginClient.getMessageFromServer());
+                //textView.setText(mLoginClient.getMessageFromServer());
             }
         });
 
@@ -196,6 +205,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             //Set de los atributos de la clase login cliente para mandarlos en el body de la petición http
             mLoginClient.setFirst_name(email);
             mLoginClient.setPassword(password);
+
+
+            File file = this.getFileStreamPath("clave.txt");
+            String linea ="";
+            StringBuilder stringBuilder =  new StringBuilder();
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+                while((linea=bufferedReader.readLine())!=null);
+                {
+                    stringBuilder.append(linea);
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Toast.makeText(LoginActivity.this, stringBuilder.toString(), Toast.LENGTH_LONG).show();
+
             mLoginClient.login();
 
 
@@ -222,10 +249,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+           // mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
             mLoginFormView.animate().setDuration(shortAnimTime).alpha(
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
@@ -247,7 +274,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }*/
+        }
     }
 
     @Override

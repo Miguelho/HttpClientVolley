@@ -1,6 +1,7 @@
 package miguel.apicall.API;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.JsonToken;
@@ -21,10 +22,13 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 
+import miguel.apicall.MainActivity;
 import miguel.apicall.R;
 
 /**
@@ -74,13 +78,16 @@ public class LoginClient {
 
         final String mRequestBody = jsonBody.toString();
 
-            stringRequest = new StringRequest(
+        stringRequest = new StringRequest(
                     Request.Method.POST,
                     API_URL,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                        Log.v("Respuesta Server", response);
+                            Log.v("Token del Server", response);
+                            Intent i = new Intent (mContext, MainActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(i);
                         }
                     }, new Response.ErrorListener() {
                         @Override
@@ -111,6 +118,29 @@ public class LoginClient {
                     if (response != null) {
                         //responseString = String.valueOf(response.statusCode);
                         responseString = String.valueOf(response.headers.get("Content-Length"));
+                        byte[]  bodyData= response.data;
+
+                        try {
+                            responseString= new String(bodyData, "UTF-8");
+                            Log.v("Body!!",responseString);
+                            OutputStreamWriter osw=null;
+                            try {
+                                osw= new OutputStreamWriter(mContext.openFileOutput("clave.txt",mContext.MODE_PRIVATE));
+                                osw.write(responseString);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }finally{
+                                try {
+                                    osw.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
                         // can get more details such as response.headers
                     }
                     return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
