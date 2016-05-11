@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         biography = (EditText) findViewById(R.id.biography);
         nationality = (EditText) findViewById(R.id.nationality);
         DoB = (EditText) findViewById(R.id.DoB);
-        url = "http://192.168.0.119:3000/authors";
+        url = this.getResources().getString(R.string.API_POSICIONES_URL);
         mRequestQueue = Volley.newRequestQueue(this);
         //Instanciación clase AsyncTask
         retrieveFeedTask = new RetrieveFeedTask();
@@ -221,14 +222,65 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     //New Era
+
+    /*
+    * Estructura Objeto JSON en colección mongoDB
+    *{
+    "geometry": {
+        "type" : "Point",
+        "coordinates" : [
+            "-3.6729744.18",
+            "40.4766598"
+        ]
+    },
+    "ts" : mydate2,
+    "acc" : 7,
+    "usuario_id" : {
+        "$ref" : "usuarios",
+        "$id" : ObjectId("5732d55d925edb981031e5a4"),
+        "$db" : "geodata"
+    },
+    "restaurante_id" : {
+        "$ref" : "restaurantes",
+        "$id" : ObjectId("5730825ffebe630e1d5af8eb"),
+        "$db" : "geodata"
+    }
+});
+    * */
+    //Se podría hacer dejando default muchos cmapos para evitar más tráfico del necesario
     public void hacerPost(View view) {
         //Body params
         JSONObject jsonBody = new JSONObject();
+        JSONObject geometry = new JSONObject();
+        JSONObject usuario_id = new JSONObject();
+        JSONObject restaurante_id = new JSONObject();
+        String[] coordenadas = {"-3.6729744.18","40.4766598"}; // Coordenadas LocProvider
+        String coords=  "-3.6729744.18,40.4766598";
         try {
-            jsonBody.put("first_name", first_name.getText().toString());
-            jsonBody.put("biography", biography.getText().toString());
-            jsonBody.put("DoB", DoB.getText().toString());
-            jsonBody.put("nationality", nationality.getText().toString());
+            //Setear objeto geometry
+            geometry.put("type", "Point");
+            //geometry.put("coordinates", coordenadas);
+            geometry.put("coordinates", coords);
+
+
+
+            //Setear objeto usuario_id
+            usuario_id.put("$ref","usuarios");
+            usuario_id.put("$id","ObjectId(\"5732d55d925edb981031e5a4\")" );//ID del documento del usuario en Mongodb
+            usuario_id.put("$db","geodata" );//ID del documento del usuario en Mongodb
+
+            //Setear objeto usuario_id
+            restaurante_id.put("$ref","restaurantes");
+            restaurante_id.put("$id","ObjectId(\"5732e5ebfebe630e1d5af8ee\")" );//ID del documento del usuario en Mongodb
+            restaurante_id.put("$db","geodata" );//ID del documento del usuario en Mongodb
+
+            jsonBody.put("geometry", geometry);
+            jsonBody.putOpt("ts",null); // El server marca el timestamp
+            jsonBody.put("acc",7); // Hardcoded, el terminal determina la precisión.
+            jsonBody.put("usuario_id",usuario_id);
+            jsonBody.put("restaurante_id",restaurante_id);
+
+            Log.v("Json",jsonBody.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
