@@ -83,7 +83,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
-        textView = (TextView) findViewById(R.id.textView);
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -207,28 +206,34 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mLoginClient.setPassword(password);
 
 
-            File file = this.getFileStreamPath("clave.txt");
-            String linea ="";
-            StringBuilder stringBuilder =  new StringBuilder();
-            try {
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-                while((linea=bufferedReader.readLine())!=null);
-                {
-                    stringBuilder.append(linea);
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            StringBuilder stringBuilder = readAuthTokenFromFile();
             Toast.makeText(LoginActivity.this, stringBuilder.toString(), Toast.LENGTH_LONG).show();
 
-            mLoginClient.login();
+            mLoginClient.loginWithServer(mProgressView,mLoginFormView);
 
 
             /*mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);*/
         }
+    }
+
+    @NonNull
+    private StringBuilder readAuthTokenFromFile() {
+        File file = this.getFileStreamPath("clave.txt");
+        String linea ="";
+        StringBuilder stringBuilder =  new StringBuilder();
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            while((linea=bufferedReader.readLine())!=null);
+            {
+                stringBuilder.append(linea);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return stringBuilder;
     }
 
     private boolean isEmailValid(String email) {
@@ -252,14 +257,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-           // mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            /*mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
             mLoginFormView.animate().setDuration(shortAnimTime).alpha(
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
                 }
-            });
+            });*/
 
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mProgressView.animate().setDuration(shortAnimTime).alpha(
@@ -273,7 +278,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+           // mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 

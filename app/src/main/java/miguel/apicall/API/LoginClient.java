@@ -1,12 +1,15 @@
 package miguel.apicall.API;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v7.app.AlertDialog;
 import android.util.JsonToken;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -66,7 +69,7 @@ public class LoginClient {
     }
 
 
-    public void login() {
+    public void loginWithServer(final View mProgressBar, final View mLoginForm) {
         //Body params
         JSONObject jsonBody = new JSONObject();
         try {
@@ -92,8 +95,9 @@ public class LoginClient {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            error.printStackTrace();
-                        }
+                            getBuilder(error,mProgressBar,mLoginForm).show();
+                            //error.printStackTrace();
+        }
                     })
             {
                 @Override
@@ -119,29 +123,34 @@ public class LoginClient {
                         //responseString = String.valueOf(response.statusCode);
                         responseString = String.valueOf(response.headers.get("Content-Length"));
                         byte[]  bodyData= response.data;
-
-                        try {
-                            responseString= new String(bodyData, "UTF-8");
-                            Log.v("Body!!",responseString);
-                            OutputStreamWriter osw=null;
+                        //bodyData no hay token, no hay login
+                        if (bodyData != null) {
                             try {
-                                osw= new OutputStreamWriter(mContext.openFileOutput("clave.txt",mContext.MODE_PRIVATE));
-                                osw.write(responseString);
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }finally{
+                                responseString= new String(bodyData, "UTF-8");
+                                Log.v("Body!!",responseString);
+                                OutputStreamWriter osw=null;
+
                                 try {
-                                    osw.close();
+                                    osw= new OutputStreamWriter(mContext.openFileOutput("clave.txt",mContext.MODE_PRIVATE));
+                                    osw.write(responseString);
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
                                 } catch (IOException e) {
                                     e.printStackTrace();
+                                }finally{
+                                    try {
+                                        osw.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
                             }
-                        } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            // can get more details such as response.headers
+                    }else{
+                            Log.v("Fallo login", "no hay token");
                         }
-                        // can get more details such as response.headers
                     }
                     return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
                 }
@@ -150,7 +159,20 @@ public class LoginClient {
             stringRequest.setTag("POST"); //Permite que continue la petición POST a pesar de cambiar de actividad
             mRequestQueue.add(stringRequest);
         }
+
+    private AlertDialog.Builder getBuilder(VolleyError error, final View mProgressBar, final View mLoginForm) {
+        return new AlertDialog.Builder(mContext)
+                .setTitle(String.valueOf(error.networkResponse.statusCode))
+                .setMessage("El usuario o la contraseña es incorrecta")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        mProgressBar.setVisibility(View.INVISIBLE);
+                        mLoginForm.setVisibility(View.VISIBLE);
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert);
     }
+}
 
 
 

@@ -266,12 +266,12 @@ public class MainActivity extends AppCompatActivity {
 
             //Setear objeto usuario_id
             usuario_id.put("$ref","usuarios");
-            usuario_id.put("$id","ObjectId(\"5732d55d925edb981031e5a4\")" );//ID del documento del usuario en Mongodb
+            usuario_id.put("id","5732d55d925edb981031e5a4" );//ID del documento del usuario en Mongodb
             usuario_id.put("$db","geodata" );//ID del documento del usuario en Mongodb
 
             //Setear objeto usuario_id
             restaurante_id.put("$ref","restaurantes");
-            restaurante_id.put("$id","ObjectId(\"5732e5ebfebe630e1d5af8ee\")" );//ID del documento del usuario en Mongodb
+            restaurante_id.put("id","5732e5ebfebe630e1d5af8ee" );//ID del documento del restaurante en Mongodb
             restaurante_id.put("$db","geodata" );//ID del documento del usuario en Mongodb
 
             jsonBody.put("geometry", geometry);
