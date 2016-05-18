@@ -2,6 +2,7 @@
     <string name="app_name">APICall</string>
     <string name="API_URL">http://194.140.6.122:3000/login</string>
     <string name="API_POSICIONES_URL">http://194.140.6.122:3000/api/position</string>
+    <string name="API_VISIT_URL">http://194.140.6.122:3000/api/visit</string>
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings related to login -->

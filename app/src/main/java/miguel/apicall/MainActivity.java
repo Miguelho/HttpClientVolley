@@ -1,7 +1,6 @@
 package miguel.apicall;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -25,20 +24,18 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+
+import miguel.apicall.Utils.JSONhandler;
+import miguel.apicall.Utils.URLhandler;
 
 public class MainActivity extends AppCompatActivity {
     ProgressBar progressBar;
@@ -224,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
     //New Era
 
     /*
-    * Estructura Objeto JSON en colección mongoDB
+    * Estructura Objeto JSON Posicion en colección mongoDB
     *{
     "geometry": {
         "type" : "Point",
@@ -248,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
 });
     * */
     //Se podría hacer dejando default muchos cmapos para evitar más tráfico del necesario
-    public void hacerPost(View view) {
+    public void postPosition(View view) {
         //Body params
         JSONObject jsonBody = new JSONObject();
         JSONObject geometry = new JSONObject();
@@ -353,6 +350,215 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    /*
+    * Estructura Objeto JSON Visita en colección mongoDB
+    *{
+    {
+    "_id" : ObjectId("573ad4b1438ab2f8078ee886"),
+    "usuario_id" : ObjectId("573071f8febe630e1d5af8e6"),
+    "restaurante_id" : ObjectId("573076a5febe630e1d5af8e7"),
+    "horaSalida" : null,
+    "horaEntrada" : ISODate("2016-05-17T08:22:09.057Z"),
+    "opinion" : {
+        "fecha" : ISODate("2016-05-17T08:22:09.058Z")
+    },
+    "__v" : 0
+}
+});
+    * */
+
+    public void postVisit(View view) {
+        //Body params
+        JSONObject jsonBody = new JSONObject();
+        JSONObject opinion = new JSONObject();
+        try {
+            //Setear objeto opinion, en la coleccion tiene Titulo,fecha,comentario,valoracion
+            opinion.put("comentario", "Me gustó mucho este restaurante");
+
+            jsonBody.put("usuario_id","5732d55d925edb981031e5a4");
+            jsonBody.put("restaurante_id","5732e5ebfebe630e1d5af8ee");
+            jsonBody.put("horaEntrada", "null");// El server marca el timestamp
+            //jsonBody.put("horaSalida"," ");
+            jsonBody.put("opinion",opinion);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        final String mRequestBody = jsonBody.toString();
+
+        if (isNetworkAvailable()) {
+            stringRequest = new StringRequest(Request.Method.POST, this.getResources().getString(R.string.API_VISIT_URL), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                    String response1 = " haha " + response;
+                    responseView.setText(response1);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                }
+            }
+            ) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json; charset=utf-8";
+                }
+
+                @Override
+                public byte[] getBody() throws AuthFailureError {
+                    try {
+                        return mRequestBody == null ? null : mRequestBody.getBytes("utf-8");
+                    } catch (UnsupportedEncodingException uee) {
+                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s",
+                                mRequestBody, "utf-8");
+                        return null;
+                    }
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    String responseString = "";
+                    if (response != null) {
+                        responseString = String.valueOf(response.statusCode);
+                        // can get more details such as response.headers
+                    }
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+            };
+
+            stringRequest.setTag("POST"); //Permite que continue la petición POST a pesar de cambiar de actividad
+            mRequestQueue.add(stringRequest);
+        }else {
+            Toast.makeText(this, "Error de conexi�n", Toast.LENGTH_LONG).show();
+        }
+    }
+    public void putVisit(View view) {
+        //Body params
+        JSONObject jsonBody = new JSONObject();
+        JSONObject opinion = new JSONObject();
+
+        try {
+            //Setear objeto opinion, en la coleccion tiene Titulo,fecha,comentario,valoracion
+            opinion.put("comentario", "Me gustó mucho este restaurante");
+
+            jsonBody.put("usuario_id","5732d55d925edb981031e5a4");
+            jsonBody.put("restaurante_id","5732e5ebfebe630e1d5af8ee");
+            jsonBody.put("horaEntrada", "null");// El server marca el timestamp
+            jsonBody.put("horaSalida"," ");
+            jsonBody.put("opinion",opinion);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        final String mRequestBody = jsonBody.toString();
+
+        if (isNetworkAvailable()) {
+            stringRequest = new StringRequest(Request.Method.PUT, this.getResources().getString(R.string.API_VISIT_URL), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                    String response1 = " haha " + response;
+                    responseView.setText(response1);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                }
+            }
+            ) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json; charset=utf-8";
+                }
+
+                @Override
+                public byte[] getBody() throws AuthFailureError {
+                    try {
+                        return mRequestBody == null ? null : mRequestBody.getBytes("utf-8");
+                    } catch (UnsupportedEncodingException uee) {
+                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s",
+                                mRequestBody, "utf-8");
+                        return null;
+                    }
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    String responseString = "";
+                    if (response != null) {
+                        responseString = String.valueOf(response.statusCode);
+                        // can get more details such as response.headers
+                    }
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+            };
+
+            stringRequest.setTag("PUT"); //Permite que continue la petición PUT a pesar de cambiar de actividad
+            mRequestQueue.add(stringRequest);
+        }else {
+            Toast.makeText(this, "Error de conexi�n", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void getTime(View view){
+        url= this.getResources().getString(R.string.API_VISIT_URL)+"/operations/getTime";
+        String param1= "_id";
+        String objectId= "573b2e3b36dc3508088d8929";//ID de la visita de la que se desea conocer el dato
+        //String uri = String.format(url+"?"+param1+"=%1$s&param2=%2$s", Construccion URL con dos parametros ( param1="xxx"&param2="yyy")
+        /*String uri = String.format(url+"?"+param1+"=%1$s", objectId);*/
+        String[] params= {param1};
+        String[] values= {objectId};
+        url= URLhandler.generateURL(url,params,values);
+
+        if (isNetworkAvailable()) {
+            progressBar.setVisibility(View.VISIBLE);
+
+            stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    if (response.length() == 0)
+                        response = "ha habido algún problema";
+                    try {
+                        JSONObject objeto = new JSONObject(response).getJSONArray("elapsedTime").getJSONObject(0);
+                        responseView.setText(JSONhandler.getHoursMinutesSecondsFromDateDifference(objeto.getLong("dateDifference")));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    responseView.setText(error.getMessage());
+                }
+            }){
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    String responseString = "";
+                    if (response != null) {
+                        try {
+                            responseString = new String (response.data, "utf-8");
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        };
+
+                        // can get more details such as response.headers
+                    }
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+
+            };
+            stringRequest.setTag("GET"); //Permite que continue la petición GET a pesar de cambiar de actividad
+            mRequestQueue.add(stringRequest);
+        }else {
+            Toast.makeText(this, "Error de conexi�n", Toast.LENGTH_LONG).show();
+        }
+    }
     private boolean isNetworkAvailable() {
         //Gestor de conectividad
         ConnectivityManager manager = (ConnectivityManager)
