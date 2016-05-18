@@ -33,6 +33,8 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import miguel.apicall.Infrastructure.Credentials;
 import miguel.apicall.Infrastructure.VolleySingleton;
@@ -383,7 +385,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Error de conexi�n", Toast.LENGTH_LONG).show();
         }
     }
-
     public void getTime(View view){
         url= this.getResources().getString(R.string.API_VISIT_URL)+"/operations/getTime";
         String param1= "_id";
@@ -439,6 +440,45 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Error de conexi�n", Toast.LENGTH_LONG).show();
         }
     }
+
+    public void listVisits(View view){
+        url= this.getResources().getString(R.string.API_VISIT_URL)+"/"; // Get por Payload
+
+
+        if (isNetworkAvailable()) {
+            progressBar.setVisibility(View.VISIBLE);
+
+            stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    if (response.length() == 0)
+                        response = "ha habido algún problema";
+                        //JSONObject objeto = new JSONObject(response).getJSONArray("elapsedTime").getJSONObject(0);
+                    responseView.setText(response);
+
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    responseView.setText(error.getMessage());
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("user_id", Credentials.getUserId());
+
+                    return params;
+                }
+            };
+            stringRequest.setTag("GET"); //Permite que continue la petición GET a pesar de cambiar de actividad
+            volleySingleton.addToRequestQueue(stringRequest);
+        }else {
+            Toast.makeText(this, "Error de conexi�n", Toast.LENGTH_LONG).show();
+        }
+    }
+
     private boolean isNetworkAvailable() {
         //Gestor de conectividad
         ConnectivityManager manager = (ConnectivityManager)
