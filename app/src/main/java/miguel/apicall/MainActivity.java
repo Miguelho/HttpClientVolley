@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         JSONObject jsonBody = new JSONObject();
         JSONObject geometry = new JSONObject();
         JSONObject usuario_id = new JSONObject();
+
         JSONObject restaurante_id = new JSONObject();
         String[] coordenadas = {"-3.6729744.18","40.4766598"}; // Coordenadas LocProvider
         String coords=  "-3.6729744.18,40.4766598";
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
             //Setear objeto usuario_id
             usuario_id.put("$ref","usuarios");
-            usuario_id.put("id","5732d55d925edb981031e5a4" );//ID del documento del usuario en Mongodb
+            usuario_id.put("id",Credentials.getUserId());//ID del documento del usuario en Mongodb
             usuario_id.put("$db","geodata" );//ID del documento del usuario en Mongodb
 
             //Setear objeto usuario_id
@@ -255,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
             //Setear objeto opinion, en la coleccion tiene Titulo,fecha,comentario,valoracion
             opinion.put("comentario", "Me gustó mucho este restaurante");
 
-            jsonBody.put("usuario_id","5732d55d925edb981031e5a4");
+            jsonBody.put("usuario_id",Credentials.getUserId());
             jsonBody.put("restaurante_id","5732e5ebfebe630e1d5af8ee");
             jsonBody.put("horaEntrada", "null");// El server marca el timestamp
             //jsonBody.put("horaSalida"," ");
@@ -323,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
             //Setear objeto opinion, en la coleccion tiene Titulo,fecha,comentario,valoracion
             opinion.put("comentario", "Me gustó mucho este restaurante");
 
-            jsonBody.put("usuario_id","5732d55d925edb981031e5a4");
+            jsonBody.put("usuario_id",Credentials.getUserId());
             jsonBody.put("restaurante_id","5732e5ebfebe630e1d5af8ee");
             jsonBody.put("horaEntrada", "null");// El server marca el timestamp
             jsonBody.put("horaSalida"," ");
