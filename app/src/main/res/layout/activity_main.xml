@@ -51,86 +51,47 @@
                 android:layout_height="wrap_content" />
         </ScrollView>
 
+
+
     </RelativeLayout>
 
     <LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:id="@+id/linearLayout">
 
-        <EditText
-            android:layout_width="match_parent"
+        <Button
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/first_name"
-            android:singleLine="true"
-            android:hint="first_name"
-            android:gravity="center_horizontal" />
+            android:text="Post!"
+            android:id="@+id/postButton"
+            android:onClick="postPosition"
+            android:layout_gravity="center_horizontal" />
 
-        <EditText
-            android:layout_width="match_parent"
+        <Button
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/biography"
-            android:singleLine="true"
-            android:hint="biography"
-            android:gravity="center_horizontal" />
+            android:text="Visit!!"
+            android:id="@+id/visitButton"
+            android:onClick="postVisit"
+            android:layout_gravity="center_horizontal" />
 
-        <EditText
-            android:layout_width="match_parent"
+        <Button
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/DoB"
-            android:singleLine="true"
-            android:hint="DoB"
-            android:gravity="center_horizontal" />
+            android:text="Update!!!"
+            android:id="@+id/visitUpdateButton"
+            android:onClick="putVisit"
+            android:layout_gravity="center_horizontal" />
 
-        <EditText
-            android:layout_width="match_parent"
+        <Button
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/nationality"
-            android:singleLine="true"
-            android:hint="nationality"
-            android:gravity="center_horizontal" />
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Post!"
-                android:id="@+id/postButton"
-                android:onClick="postPosition"
-                android:layout_gravity="center_horizontal" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Visit!!"
-                android:id="@+id/visitButton"
-                android:onClick="postVisit"
-                android:layout_gravity="center_horizontal" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Update!!!"
-                android:id="@+id/visitUpdateButton"
-                android:onClick="putVisit"
-                android:layout_gravity="center_horizontal" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tiempo!!!"
-                android:id="@+id/timeButton"
-                android:onClick="getTime"
-                android:layout_gravity="center_horizontal" />
-        </LinearLayout>
-
+            android:text="Tiempo!!!"
+            android:id="@+id/timeButton"
+            android:onClick="getTime"
+            android:layout_gravity="center_horizontal" />
     </LinearLayout>
 </RelativeLayout>

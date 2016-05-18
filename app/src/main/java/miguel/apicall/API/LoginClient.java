@@ -31,8 +31,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 
+import miguel.apicall.Infrastructure.Credentials;
 import miguel.apicall.MainActivity;
 import miguel.apicall.R;
+import miguel.apicall.Utils.JSONhandler;
 
 /**
  * Created by Miguel on 5/9/2016.
@@ -120,8 +122,6 @@ public class LoginClient {
                 protected Response<String> parseNetworkResponse(NetworkResponse response) {
                     String responseString = "";
                     if (response != null) {
-                        //responseString = String.valueOf(response.statusCode);
-                        responseString = String.valueOf(response.headers.get("Content-Length"));
                         byte[]  bodyData= response.data;
                         //bodyData no hay token, no hay login
                         if (bodyData != null) {
@@ -129,10 +129,10 @@ public class LoginClient {
                                 responseString= new String(bodyData, "UTF-8");
                                 Log.v("Body!!",responseString);
                                 OutputStreamWriter osw=null;
-
                                 try {
                                     osw= new OutputStreamWriter(mContext.openFileOutput("clave.txt",mContext.MODE_PRIVATE));
-                                    osw.write(responseString);
+                                    osw.write(JSONhandler.getJSONObjectFromBackend(responseString,"token"));
+                                    Credentials.setUserId(JSONhandler.getJSONObjectFromBackend(responseString,"userId"));
                                 } catch (FileNotFoundException e) {
                                     e.printStackTrace();
                                 } catch (IOException e) {

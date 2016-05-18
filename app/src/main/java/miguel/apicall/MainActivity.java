@@ -34,49 +34,35 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import miguel.apicall.Infrastructure.Credentials;
+import miguel.apicall.Infrastructure.VolleySingleton;
 import miguel.apicall.Utils.JSONhandler;
 import miguel.apicall.Utils.URLhandler;
 
 public class MainActivity extends AppCompatActivity {
     ProgressBar progressBar;
     TextView responseView;
-    EditText emailText, first_name, biography, nationality, DoB;
-    String email, message;
-    public static String API_KEY = "e35ca63a3a483d65";
-    public static String API_URL = "https://api.fullcontact.com/v2/person.json?";
-    RetrieveFeedTask retrieveFeedTask;
     String url;
-
+    VolleySingleton volleySingleton;
     //New Era
-    RequestQueue mRequestQueue;
     StringRequest stringRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        volleySingleton= VolleySingleton.getInstance(this);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         responseView = (TextView) findViewById(R.id.responseView);
-        emailText = (EditText) findViewById(R.id.emailText);
-        first_name = (EditText) findViewById(R.id.first_name);
-        biography = (EditText) findViewById(R.id.biography);
-        nationality = (EditText) findViewById(R.id.nationality);
-        DoB = (EditText) findViewById(R.id.DoB);
+        responseView.setText(Credentials.getUserId());
         url = this.getResources().getString(R.string.API_POSICIONES_URL);
-        mRequestQueue = Volley.newRequestQueue(this);
-        //Instanciación clase AsyncTask
-        retrieveFeedTask = new RetrieveFeedTask();
-
-        /*Intent loginIntent = new Intent(this, LoginActivity.class);
-        startActivity(loginIntent);*/
-
 
     }
 
     @Override
-    protected void onStop() {
+    protected void onStop(){
         super.onStop();
-        mRequestQueue.cancelAll(new RequestQueue.RequestFilter() {
+        volleySingleton.getRequestQueue().cancelAll(new RequestQueue.RequestFilter() {
             @Override
             public boolean apply(Request<?> request) {
                 return false;
@@ -84,114 +70,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void buscarInfo(View view) {
-        //Recoge el email
-        email = emailText.getText().toString();
-        //retrieveFeedTask.onPreExecute();
-        retrieveFeedTask.execute(); // Lanza los 4 métodos de la clase AsyncTask en orden
-
-    }
-
-    //Plain Old School HttpClient
-    class RetrieveFeedTask extends AsyncTask<Void, Void, String> {
-        private Exception exception;
-
-        @Override
-        protected void onPreExecute() {
-            progressBar.setVisibility(View.VISIBLE);
-            responseView.setText("");
-        }
-
-        @Override
-        protected String doInBackground(Void... urls) {
-            try {
-                //Formación dinámica en función del email de la URL de la API
-                //URL url = new URL( API_URL + "email=" +email+ "&apiKey=" + API_KEY);
-                URL url = new URL("http://192.168.0.119:3000/authors");
-                //Abro conexión a la URL
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                try {
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));//Llamada GET
-                    StringBuilder stringBuilder = new StringBuilder();
-                    String line;
-                    while ((line = bufferedReader.readLine()) != null) {
-                        stringBuilder.append(line).append("\n");
-                    }
-                    bufferedReader.close();
-                    return stringBuilder.toString();
-                } finally {
-                    urlConnection.disconnect();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String response) {
-            if (response == null)
-                response = "ha habido algún problema";
-
-            progressBar.setVisibility(View.INVISIBLE);
-            /*try {
-                JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
-                String requestID = object.getString("requestId");
-                int likelihood = object.getInt("likelihood");
-                JSONArray photos = object.getJSONArray("photos");
-            } catch (JSONException e) {
-                // Appropriate error handling code
-            }*/
-
-            responseView.setText(response);
-
-        }
-    }
-
-    class PostAsyncTask extends AsyncTask<Void, Void, String> {
-        private Exception exception;
-
-        @Override
-        protected void onPreExecute() {
-            progressBar.setVisibility(View.VISIBLE);
-            responseView.setText("");
-        }
-
-        @Override
-        protected String doInBackground(Void... urls) {
-            try {
-                //Formación dinámica en función del email de la URL de la API
-                URL url = new URL(API_URL + "email=" + "&apiKey=" + API_KEY);
-
-                //Abro conexión a la URL
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                try {
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));//Llamada GET
-                    StringBuilder stringBuilder = new StringBuilder();
-                    String line;
-                    while ((line = bufferedReader.readLine()) != null) {
-                        stringBuilder.append(line).append("\n");
-                    }
-                    bufferedReader.close();
-                    return stringBuilder.toString();
-                } finally {
-                    urlConnection.disconnect();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String response) {
-            if (response == null)
-                response = "ha habido algún problema";
-
-            progressBar.setVisibility(View.INVISIBLE);
-            responseView.setText(response);
-        }
-    }
 
     //New Era of Volley
     public void hacerGet(View view) {
@@ -212,8 +90,9 @@ public class MainActivity extends AppCompatActivity {
                     responseView.setText(error.getMessage());
                 }
             });
+
             stringRequest.setTag("GET"); //Permite que continue la petición GET a pesar de cambiar de actividad
-            mRequestQueue.add(stringRequest);
+            volleySingleton.addToRequestQueue(stringRequest);
         }else {
             Toast.makeText(this, "Error de conexi�n", Toast.LENGTH_LONG).show();
         }
@@ -344,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };*/
             stringRequest.setTag("POST"); //Permite que continue la petición POST a pesar de cambiar de actividad
-            mRequestQueue.add(stringRequest);
+            volleySingleton.addToRequestQueue(stringRequest);
         }else {
                 Toast.makeText(this, "Error de conexi�n", Toast.LENGTH_LONG).show();
         }
@@ -430,7 +309,7 @@ public class MainActivity extends AppCompatActivity {
             };
 
             stringRequest.setTag("POST"); //Permite que continue la petición POST a pesar de cambiar de actividad
-            mRequestQueue.add(stringRequest);
+            volleySingleton.addToRequestQueue(stringRequest);
         }else {
             Toast.makeText(this, "Error de conexi�n", Toast.LENGTH_LONG).show();
         }
@@ -498,7 +377,7 @@ public class MainActivity extends AppCompatActivity {
             };
 
             stringRequest.setTag("PUT"); //Permite que continue la petición PUT a pesar de cambiar de actividad
-            mRequestQueue.add(stringRequest);
+            volleySingleton.addToRequestQueue(stringRequest);
         }else {
             Toast.makeText(this, "Error de conexi�n", Toast.LENGTH_LONG).show();
         }
@@ -554,7 +433,7 @@ public class MainActivity extends AppCompatActivity {
 
             };
             stringRequest.setTag("GET"); //Permite que continue la petición GET a pesar de cambiar de actividad
-            mRequestQueue.add(stringRequest);
+            volleySingleton.addToRequestQueue(stringRequest);
         }else {
             Toast.makeText(this, "Error de conexi�n", Toast.LENGTH_LONG).show();
         }
