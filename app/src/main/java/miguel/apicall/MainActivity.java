@@ -512,7 +512,7 @@ public class MainActivity extends AppCompatActivity {
         /*String uri = String.format(url+"?"+param1+"=%1$s", objectId);*/
         String[] params= {param1};
         String[] values= {objectId};
-        url= URLhandler.generateURL(url,params,values);
+        url= URLhandler.generateURL(url,params,values);//metodo
 
         if (isNetworkAvailable()) {
             progressBar.setVisibility(View.VISIBLE);
