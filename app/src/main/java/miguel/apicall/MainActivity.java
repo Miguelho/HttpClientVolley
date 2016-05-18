@@ -441,8 +441,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     public void getTotalTimeFromVisits(View view){
-        String idRestaurante;
-        String tiempoTotal;
+
         url= this.getResources().getString(R.string.API_VISIT_URL)+"/operations/getTotalTimeFromVisits"; // Get por Payload
 
 
@@ -452,17 +451,24 @@ public class MainActivity extends AppCompatActivity {
             stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
+                    String idRestaurante=null;
+                    String tiempoTotal=null;
                     progressBar.setVisibility(View.INVISIBLE);
-                    if (response.length() == 0)
+                    if (response.length() == 0) {
                         response = "ha habido algún problema";
-                    try {
-                        JSONhandler.getJSONARRAYfromJSONObjectBackend(response,"totalTime").getJSONObject(0).getString("_id");
-                        response=JSONhandler.getJSONARRAYfromJSONObjectBackend(response,"totalTime").getJSONObject(0).getString("total");
-                        response=JSONhandler.getHoursMinutesSecondsFromDateDifference(Long.valueOf(response));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        responseView.setText(response);
+                    }else {
+                        try {
+                            JSONObject objetoContenedor = JSONhandler.getJSONARRAYfromJSONObjectBackend(response, "totalTime").getJSONObject(0);//La estructura del objeto json que devuelve el backend es
+                            //{xxx:[{}]}, del que tenemos que coger el array[] de objetos json y coger el primer elemento que es el objeto contenedor
+                            idRestaurante=objetoContenedor.getString("_id");
+                            tiempoTotal= JSONhandler.getHoursMinutesSecondsFromDateDifference(Long.valueOf(objetoContenedor.getString("total")));
+                            responseView.setText(String.format(" Restaurante %1$s \n Total de tiempo %2$s", idRestaurante, tiempoTotal));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    responseView.setText(response);
+
 
                 }
             }, new Response.ErrorListener() {
