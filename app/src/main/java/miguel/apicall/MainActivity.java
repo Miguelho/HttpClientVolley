@@ -385,8 +385,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Error de conexi�n", Toast.LENGTH_LONG).show();
         }
     }
-    public void getTime(View view){
-        url= this.getResources().getString(R.string.API_VISIT_URL)+"/operations/getTime";
+    public void getTimeFromVisit(View view){
+        url= this.getResources().getString(R.string.API_VISIT_URL)+"/operations/getTimeFromVisit";
         String param1= "_id";
         String objectId= "573b2e3b36dc3508088d8929";//ID de la visita de la que se desea conocer el dato
         //String uri = String.format(url+"?"+param1+"=%1$s&param2=%2$s", Construccion URL con dos parametros ( param1="xxx"&param2="yyy")
@@ -433,6 +433,52 @@ public class MainActivity extends AppCompatActivity {
                     return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
                 }
 
+            };
+            stringRequest.setTag("GET"); //Permite que continue la petición GET a pesar de cambiar de actividad
+            volleySingleton.addToRequestQueue(stringRequest);
+        }else {
+            Toast.makeText(this, "Error de conexi�n", Toast.LENGTH_LONG).show();
+        }
+    }
+    public void getTotalTimeFromVisits(View view){
+        String idRestaurante;
+        String tiempoTotal;
+        url= this.getResources().getString(R.string.API_VISIT_URL)+"/operations/getTotalTimeFromVisits"; // Get por Payload
+
+
+        if (isNetworkAvailable()) {
+            progressBar.setVisibility(View.VISIBLE);
+
+            stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    if (response.length() == 0)
+                        response = "ha habido algún problema";
+                    try {
+                        JSONhandler.getJSONARRAYfromJSONObjectBackend(response,"totalTime").getJSONObject(0).getString("_id");
+                        response=JSONhandler.getJSONARRAYfromJSONObjectBackend(response,"totalTime").getJSONObject(0).getString("total");
+                        response=JSONhandler.getHoursMinutesSecondsFromDateDifference(Long.valueOf(response));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    responseView.setText(response);
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    responseView.setText(error.getMessage());
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("user_id", Credentials.getUserId());
+
+                    return params;
+                }
             };
             stringRequest.setTag("GET"); //Permite que continue la petición GET a pesar de cambiar de actividad
             volleySingleton.addToRequestQueue(stringRequest);

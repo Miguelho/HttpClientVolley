@@ -1,5 +1,6 @@
 package miguel.apicall.Utils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,8 +21,7 @@ public class JSONhandler {
         return sdf.format(new Date(dateinmilisseconds));
     }
 
-//{"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE0NjM1NjU4NDEsImV4cCI6MTQ2NDc3NTQ0MX0.V5vL97iyIuMnLYqw9nJCmVz3niko-CbVdu2c6HPsdus","userId":"573432c90901d3b81b0e7969"}
-    public static String getJSONObjectFromBackend(String jsonString,String fieldName){
+    public static String getStringFromJSONObjectBackend(String jsonString,String fieldName){
         String output=null;
         JSONObject jsonObject=null;
         try {
@@ -31,7 +31,23 @@ public class JSONhandler {
             e.printStackTrace();
             output="Error: nothing";
         }
-
         return output;
     }
-}
+
+    public static JSONArray getJSONARRAYfromJSONObjectBackend(String jsonString, String fieldName){
+        JSONArray output=null;
+        JSONObject jsonObject=null;
+        try {
+            jsonObject= new JSONObject(jsonString);
+            output=jsonObject.getJSONArray(fieldName);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            output=null;
+        }
+        return output;
+
+    }
+
+
+
+    }

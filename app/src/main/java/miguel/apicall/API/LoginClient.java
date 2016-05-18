@@ -131,8 +131,8 @@ public class LoginClient {
                                 OutputStreamWriter osw=null;
                                 try {
                                     osw= new OutputStreamWriter(mContext.openFileOutput("clave.txt",mContext.MODE_PRIVATE));
-                                    osw.write(JSONhandler.getJSONObjectFromBackend(responseString,"token"));
-                                    Credentials.setUserId(JSONhandler.getJSONObjectFromBackend(responseString,"userId"));
+                                    osw.write(JSONhandler.getStringFromJSONObjectBackend(responseString,"token"));
+                                    Credentials.setUserId(JSONhandler.getStringFromJSONObjectBackend(responseString,"userId"));
                                 } catch (FileNotFoundException e) {
                                     e.printStackTrace();
                                 } catch (IOException e) {

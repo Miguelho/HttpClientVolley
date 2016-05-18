@@ -69,6 +69,14 @@
             android:text="Visitas!!"
             android:onClick="listVisits"
             android:id="@+id/listMyVisits" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="tiempo visitas"
+            android:onClick="getTotalTimeFromVisits"
+            android:id="@+id/timeVisitas" />
     </LinearLayout>
 
     <LinearLayout
@@ -105,9 +113,9 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tiempo!!!"
+            android:text="Tiempo Visita!!!"
             android:id="@+id/timeButton"
-            android:onClick="getTime"
+            android:onClick="getTimeFromVisit"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
